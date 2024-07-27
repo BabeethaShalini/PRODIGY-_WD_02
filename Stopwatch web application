@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .stopwatch {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #display {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1em;
+        }
+
+        #laps {
+            list-style: none;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="stopwatch">
+        <h1>Stopwatch</h1>
+        <div id="display">00:00:00</div>
+        <button id="start">Start</button>
+        <button id="pause">Pause</button>
+        <button id="reset">Reset</button>
+        <button id="lap">Lap</button>
+        <ul id="laps"></ul>
+    </div>
+    <script>
+        let timer;
+        let isRunning = false;
+        let startTime;
+        let elapsedTime = 0;
+        let lapTimes = [];
+
+        const display = document.getElementById('display');
+        const startButton = document.getElementById('start');
+        const pauseButton = document.getElementById('pause');
+        const resetButton = document.getElementById('reset');
+        const lapButton = document.getElementById('lap');
+        const laps = document.getElementById('laps');
+
+        function updateTime() {
+            elapsedTime = Date.now() - startTime;
+            display.textContent = formatTime(elapsedTime);
+        }
+
+        function formatTime(time) {
+            let date = new Date(time);
+            let minutes = String(date.getUTCMinutes()).padStart(2, '0');
+            let seconds = String(date.getUTCSeconds()).padStart(2, '0');
+            let milliseconds = String(date.getUTCMilliseconds()).padStart(3, '0');
+            return `${minutes}:${seconds}:${milliseconds}`;
+        }
+
+        startButton.addEventListener('click', () => {
+            if (!isRunning) {
+                startTime = Date.now() - elapsedTime;
+                timer = setInterval(updateTime, 10);
+                isRunning = true;
+            }
+        });
+
+        pauseButton.addEventListener('click', () => {
+            if (isRunning) {
+                clearInterval(timer);
+                isRunning = false;
+            }
+        });
+
+        resetButton.addEventListener('click', () => {
+            clearInterval(timer);
+            isRunning = false;
+            elapsedTime = 0;
+            display.textContent = '00:00:00';
+            laps.innerHTML = '';
+            lapTimes = [];
+        });
+
+        lapButton.addEventListener('click', () => {
+            if (isRunning) {
+                lapTimes.push(elapsedTime);
+                let li = document.createElement('li');
+                li.textContent = formatTime(elapsedTime);
+                laps.appendChild(li);
+            }
+        });
+    </script>
+</body>
+</html>
